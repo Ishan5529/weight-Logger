@@ -31,7 +31,7 @@ function createChart() {
 }
 
 function getDataPoints() {
-  const log = JSON.parse(localStorage.getItem('log'));
+  const log = JSON.parse(localStorage.getItem('log'))??[];
   const dataPoints = [];
   let x = '', y = 10;
   for (const item of log) {
@@ -40,7 +40,11 @@ function getDataPoints() {
     dataPoints.push({'x': x, 'y': y});
   }
 
-  dataPoints.sort(compareFn);
+  if (dataPoints.length == 0)
+    dataPoints.push({'x': new Date(), 'y': 10.000});
+  else
+    dataPoints.sort(compareFn);
+
   return dataPoints;
 }
 
@@ -72,7 +76,7 @@ function today(target, kg, g) {
   const today = now.getFullYear() + '-' + month + '-' + day;
   target.value = today;
 
-  const log = JSON.parse(localStorage.getItem("log"));
+  const log = JSON.parse(localStorage.getItem("log"))??[];
   setWeights(log, kg, g);
 }
 
@@ -121,6 +125,10 @@ function addLog(dField, kgField, gField) {
   log.push(todaysLog);
 
   localStorage.setItem('log', JSON.stringify(log));
+
+  let currentDate = new Date(dField.value);
+  currentDate.setDate(currentDate.getDate() + 1);
+  dField.value = currentDate.toISOString().split('T')[0];
 }
 
 function clearLast() {
